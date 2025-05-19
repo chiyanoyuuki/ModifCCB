@@ -24,6 +24,7 @@ export class AppComponent {
   message = '';
   images: any = [];
   imagesPortfolio: any = [];
+  loaded = false;
 
   async loadSelectedFile() {
   if (!this.selectedFile) return;
@@ -123,79 +124,133 @@ export class AppComponent {
     }));
 
     this.imagesPortfolio = this.imagesPortfolio.filter((img:any)=>img.name.includes(".png")||img.name.includes(".jpg"));
+
+    if(this.images.length>0)this.loaded = true;
   }
 
-  async uploadImage(event:any) {
-    let file: any = event.target.files[0];
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const base64 = (reader.result as string).split(',')[1];
+  async uploadImage($event: any) {
+    let file: any = $event.target.files[0];
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const base64 = (reader.result as string).split(',')[1];
+    const content = btoa(unescape(encodeURIComponent(atob(base64))));
 
-      const content = btoa(unescape(encodeURIComponent(atob(base64)))); // sécurisation encodage
+    const filename = file.name;
 
-      // upload vers assets/images/
-      await axios.put(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/public/${file.name}`, {
-        message: `Ajout image ${file.name}`,
-        content,
-      }, {
-        headers: {
-          Authorization: `token ${this.token}`
-        }
+    // Étape 1 : vérifier si l'image existe déjà
+    let shaAssets = '';
+    let shaDocs = '';
+    try {
+      const existing = await axios.get(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/public/${filename}`, {
+        headers: { Authorization: `token ${this.token}` }
       });
+      shaAssets = existing.data.sha;
+    } catch (err) {
+      // image inexistante, c'est normal
+    }
 
-      // upload vers docs/assets/images/
-      await axios.put(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/docs/${file.name}`, {
-        message: `Ajout image ${file.name} (docs)`,
-        content,
-      }, {
-        headers: {
-          Authorization: `token ${this.token}`
-        }
+    try {
+      const existingDocs = await axios.get(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/docs/${filename}`, {
+        headers: { Authorization: `token ${this.token}` }
       });
+      shaDocs = existingDocs.data.sha;
+    } catch (err) {
+      // image inexistante, c'est normal
+    }
 
-      this.message = `${file.name} ajoutée avec succès.`;
-      this.loadImages(); // recharger liste
-    };
+    if (shaAssets || shaDocs) {
+      const overwrite = window.confirm(`L'image "${filename}" existe déjà. La remplacer ?`);
+      if (!overwrite) return;
+    }
 
-    reader.readAsDataURL(file);
+    // Étape 2 : uploader ou remplacer
+    await axios.put(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/public/${filename}`, {
+      message: shaAssets ? `Mise à jour image ${filename}` : `Ajout image ${filename}`,
+      content,
+      ...(shaAssets && { sha: shaAssets })
+    }, {
+      headers: { Authorization: `token ${this.token}` }
+    });
+
+    await axios.put(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/docs/${filename}`, {
+      message: shaDocs ? `Mise à jour image ${filename} (docs)` : `Ajout image ${filename} (docs)`,
+      content,
+      ...(shaDocs && { sha: shaDocs })
+    }, {
+      headers: { Authorization: `token ${this.token}` }
+    });
+
+    this.message = `Image "${filename}" uploadée avec succès (mise à jour si existante).`;
+    this.loadImages();
+  };
+
+  reader.readAsDataURL(file);
   }
 
-  async uploadImagePortfolio(event:any) {
-    let file: any = event.target.files[0];
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const base64 = (reader.result as string).split(',')[1];
+  async uploadImagePortfolio($event: any) {
+    let file: any = $event.target.files[0];
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const base64 = (reader.result as string).split(',')[1];
+    const content = btoa(unescape(encodeURIComponent(atob(base64))));
 
-      const content = btoa(unescape(encodeURIComponent(atob(base64)))); // sécurisation encodage
+    const filename = file.name;
 
-      // upload vers assets/images/
-      await axios.put(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/public/portfolio/${file.name}`, {
-        message: `Ajout image ${file.name}`,
-        content,
-      }, {
-        headers: {
-          Authorization: `token ${this.token}`
-        }
+    // Étape 1 : vérifier si l'image existe déjà
+    let shaAssets = '';
+    let shaDocs = '';
+    try {
+      const existing = await axios.get(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/public/portoflio/${filename}`, {
+        headers: { Authorization: `token ${this.token}` }
       });
+      shaAssets = existing.data.sha;
+    } catch (err) {
+      // image inexistante, c'est normal
+    }
 
-      // upload vers docs/assets/images/
-      await axios.put(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/docs/portfolio/${file.name}`, {
-        message: `Ajout image ${file.name} (docs)`,
-        content,
-      }, {
-        headers: {
-          Authorization: `token ${this.token}`
-        }
+    try {
+      const existingDocs = await axios.get(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/docs/portoflio/${filename}`, {
+        headers: { Authorization: `token ${this.token}` }
       });
+      shaDocs = existingDocs.data.sha;
+    } catch (err) {
+      // image inexistante, c'est normal
+    }
 
-      this.message = `${file.name} ajoutée avec succès.`;
-      this.loadImages(); // recharger liste
-    };
+    if (shaAssets || shaDocs) {
+      const overwrite = window.confirm(`L'image "${filename}" existe déjà. La remplacer ?`);
+      if (!overwrite) return;
+    }
 
-    reader.readAsDataURL(file);
+    // Étape 2 : uploader ou remplacer
+    await axios.put(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/public/portoflio/${filename}`, {
+      message: shaAssets ? `Mise à jour image ${filename}` : `Ajout image ${filename}`,
+      content,
+      ...(shaAssets && { sha: shaAssets })
+    }, {
+      headers: { Authorization: `token ${this.token}` }
+    });
+
+    await axios.put(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/docs/portoflio/${filename}`, {
+      message: shaDocs ? `Mise à jour image ${filename} (docs)` : `Ajout image ${filename} (docs)`,
+      content,
+      ...(shaDocs && { sha: shaDocs })
+    }, {
+      headers: { Authorization: `token ${this.token}` }
+    });
+
+    this.message = `Image "${filename}" uploadée avec succès (mise à jour si existante).`;
+    this.loadImages();
+  };
+
+  reader.readAsDataURL(file);
   }
+
 
   async deleteImage(image: any) {
+    const confirmed = window.confirm(`Supprimer l'image "${image.name}" ?`);
+    if (!confirmed) return;
+
     await axios.delete(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/public/${image.path}`, {
       data: {
         message: `Suppression ${image.name}`,

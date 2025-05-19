@@ -1,45 +1,51 @@
 <div class="container">
   <h1>Éditeur GitHub</h1>
 
-  <label>Token GitHub :</label>
-  <input [(ngModel)]="token" placeholder="ghp_xxxxxxxxxxxxxxx" type="password" />
+  <div *ngIf="!loaded">
+    <label>Token GitHub :</label>
+    <input [(ngModel)]="token" placeholder="ghp_xxxxxxxxxxxxxxx" type="password" />
 
-  <label>Fichier à modifier :</label>
-  <!-- Choix du fichier -->
-  <select [(ngModel)]="selectedFile" (change)="loadSelectedFile()">
-    <option *ngFor="let file of editableFiles" [value]="file">{{ file }}</option>
-  </select>
-
-  <!-- Éditeur -->
-  <textarea [(ngModel)]="content" rows="20" *ngIf="selectedFile"></textarea>
-
-  <!-- Sauvegarde -->
-  <button (click)="saveSelectedFile()" [disabled]="!selectedFile || !content">Sauvegarder les deux fichiers</button>
-
-  <br/>
-  <hr/>
-
-  <h1>Images du site</h1>
-  <button (click)="loadImages()">Load Images</button>
-  <input type="file" (change)="uploadImage($event)" />
-  <div class="images">
-    <div *ngFor="let img of images" class="image">
-      <img [src]="img.url" width="100" />
-      <p>{{ img.name }}</p>
-      <button (click)="deleteImage(img)">Supprimer</button>
-    </div>
+    <button (click)="loadImages()">Valider Token</button>
   </div>
 
-  <br/>
-  <hr/>
+  <div *ngIf="loaded">
+    <label>Fichier à modifier :</label>
+      <!-- Choix du fichier -->
+      <select [(ngModel)]="selectedFile" (change)="loadSelectedFile()">
+        <option *ngFor="let file of editableFiles" [value]="file">{{ file }}</option>
+      </select>
 
-  <h1>Portfolio</h1>
-  <input type="file" (change)="uploadImagePortfolio($event)" />
-  <div class="images">
-    <div *ngFor="let img of imagesPortfolio" class="image">
-      <img [src]="img.url" width="100" />
-      <p>{{ img.name }}</p>
-      <button (click)="deleteImage(img)">Supprimer</button>
-    </div>
+      <!-- Éditeur -->
+      <textarea [(ngModel)]="content" rows="20" *ngIf="selectedFile"></textarea>
+
+      <!-- Sauvegarde -->
+      <button (click)="saveSelectedFile()" [disabled]="!selectedFile || !content">Sauvegarder les deux fichiers</button>
+
+      <br/>
+      <hr/>
+
+      <h1>Images du site</h1>
+      <input type="file" (change)="uploadImage($event)" />
+      <div class="images">
+        <div *ngFor="let img of images" class="image">
+          <img [src]="img.url" width="100" />
+          <p>{{ img.name }}</p>
+          <button (click)="deleteImage(img)">Supprimer</button>
+        </div>
+      </div>
+
+      <br/>
+      <hr/>
+
+      <h1>Portfolio</h1>
+      <input type="file" (change)="uploadImagePortfolio($event)" />
+      <div class="images">
+        <div *ngFor="let img of imagesPortfolio" class="image">
+          <img [src]="img.url" width="100" />
+          <p>{{ img.name }}</p>
+          <button (click)="deleteImage(img)">Supprimer</button>
+        </div>
+      </div>
   </div>
+  
 </div>
