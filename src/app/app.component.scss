@@ -12,20 +12,46 @@
     font-family: monospace;
   }
 
-  button {
-    padding: 0.7rem 1.2rem;
-    background: #007bff;
-    border: none;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
-    font-weight: bold;
+  button{
+    display:flex;
+    margin:auto;
+  }
 
-    &:disabled {
-      background: #aaa;
-      cursor: not-allowed;
+  .flex{
+    max-height: 30px;
+    display:flex;
+    justify-content: space-evenly;
+    label{
+      display:flex;
+      margin:0vw 1vw;
+      input{
+        margin:0vh 1vw;
+          width:unset;
+      }
+      img{
+        object-fit: cover;
+        object-position: center;
+      }
+    }
+    button{
+      margin: unset;
+      padding: 0vh 1vw;
     }
   }
+}
+.addElement{
+  margin-top:2vh!important;
+  padding:1vh 1vw;
+}
+.save{
+  margin-top:5vh!important;
+  padding:2vh 2vw;
+}
+.bloc{
+  overflow-x: auto;
+  scrollbar-color: white #101010;
+  scrollbar-width: thin;
+  padding-bottom: 2vh;
 }
 
 .images{

@@ -1,5 +1,5 @@
 <div class="container">
-  <h1>Éditeur GitHub</h1>
+  <h1>Données</h1>
 
   <div *ngIf="!loaded">
     <label>Token GitHub :</label>
@@ -9,17 +9,193 @@
   </div>
 
   <div *ngIf="loaded">
-    <label>Fichier à modifier :</label>
-      <!-- Choix du fichier -->
-      <select [(ngModel)]="selectedFile" (change)="loadSelectedFile()">
-        <option *ngFor="let file of editableFiles" [value]="file">{{ file }}</option>
-      </select>
 
       <!-- Éditeur -->
-      <textarea [(ngModel)]="content" rows="20" *ngIf="selectedFile"></textarea>
+      <h2>Menus : </h2>
+      <div class="bloc">
+        <div *ngFor="let item of content.topmenu; let i = index" class="flex">
+          <label>
+            <p>EN:</p>
+            <input type="text" [(ngModel)]="item.en"/>
+          </label>
+          <label>
+            <p>FR:</p>
+            <input type="text" [(ngModel)]="item.fr"/>
+          </label>
+          <button class="btn btn-danger mt-2" (click)="removeItem('topmenu',i)">Supprimer</button>
+        </div>
+      </div>
+      <button class="addElement" (click)="addItem('topmenu')">Ajouter un élément</button>
+      
+      <h2>Galleries : </h2>
+      <div class="bloc">
+        <div *ngFor="let item of content.galleries; let i = index" class="flex">
+          <label *ngFor="let trad of item.fr;let j=index">
+            <p>FR:</p>
+            <input type="text" [(ngModel)]="item.fr[j]"/>
+          </label>
+          <label *ngFor="let trad of item.fr;let j=index">
+            <p>EN:</p>
+            <input type="text" [(ngModel)]="item.en[j]"/>
+          </label>
+          <label>
+            <p>Image:</p>
+            <input type="text" [(ngModel)]="item.img"/>
+            <img [src]="getImg(item.img)" width="100" />
+          </label>
+          <label>
+            <p>Click:</p>
+            <input type="text" [(ngModel)]="item.click"/>
+          </label>
+          <button class="btn btn-danger mt-2" (click)="removeItem('galleries',i)">Supprimer</button>
+        </div>
+      </div>
+      <button class="addElement" (click)="addItem('galleries')">Ajouter un élément</button>
+      
+      <h2>Photos en bas : </h2>
+      <div class="bloc">
+        <div *ngFor="let item of content.lists; let i = index" class="flex">
+          <label>
+            <input type="text" [(ngModel)]="content.lists[i]"/>
+            <img [src]="getImg(item)" width="100" />
+          </label>
+          <button class="btn btn-danger mt-2" (click)="removeItem('lists',i)">Supprimer</button>
+        </div>
+      </div>
+      <button class="addElement" (click)="addItem('lists')">Ajouter un élément</button>
+
+      <h2>Champs contact : </h2>
+      <div class="bloc">
+        <div *ngFor="let item of content.fields; let i = index" class="flex">
+          <label>
+            <p>Requis:</p>
+            <input type="checkbox" [(ngModel)]="item.required" />
+          </label>
+          <label>
+            <p>EN:</p>
+            <input type="text" [(ngModel)]="item.nom"/>
+          </label>
+          <label>
+            <p>FR:</p>
+            <input type="text" [(ngModel)]="item.trad"/>
+          </label>
+          <label>
+            <p>EN:</p>
+            <input type="text" [(ngModel)]="item.placeholder"/>
+          </label>
+          <label>
+            <p>FR:</p>
+            <input type="text" [(ngModel)]="item.placetrad"/>
+          </label>
+          <label>
+            <p>Type:</p>
+            <input type="text" [(ngModel)]="item.type"/>
+          </label>
+          <button class="btn btn-danger mt-2" (click)="removeItem('fields',i)">Supprimer</button>
+        </div>
+      </div>
+      <button class="addElement" (click)="addItem('fields')">Ajouter un élément</button>
+      
+      <h2>Liste Avis : </h2>
+      <div class="bloc">
+        <div *ngFor="let item of content.listeavis; let i = index" class="flex">
+          <label>
+            <p>Nom:</p>
+            <input type="text" [(ngModel)]="item.nom"/>
+          </label>
+          <label>
+            <p>Image:</p>
+            <input type="text" [(ngModel)]="item.img"/>
+            <img [src]="getImg(item.img)" width="100" />
+          </label>
+          <label>
+            <p>EN:</p>
+            <input type="text" [(ngModel)]="item.txt"/>
+          </label>
+          <label>
+            <p>FR:</p>
+            <input type="text" [(ngModel)]="item.trad"/>
+          </label>
+          <button class="btn btn-danger mt-2" (click)="removeItem('listeavis',i)">Supprimer</button>
+        </div>
+      </div>
+      <button class="addElement" (click)="addItem('listeavis')">Ajouter un élément</button>
+      
+      <h2>Services : </h2>
+      <div class="bloc">
+        <div *ngFor="let item of content.services; let i = index" class="flex">
+          <label>
+            <p>EN:</p>
+            <input type="text" [(ngModel)]="item.nom"/>
+          </label>
+          <label>
+            <p>FR:</p>
+            <input type="text" [(ngModel)]="item.nom2"/>
+          </label>
+          <label>
+            <p>EN:</p>
+            <input type="text" [(ngModel)]="item.txt"/>
+          </label>
+          <label>
+            <p>FR:</p>
+            <input type="text" [(ngModel)]="item.txt2"/>
+          </label>
+          <button class="btn btn-danger mt-2" (click)="removeItem('services',i)">Supprimer</button>
+        </div>
+      </div>
+      <button class="addElement" (click)="addItem('services')">Ajouter un élément</button>
+      
+      <h2>FAQ : </h2>
+      <div class="bloc">
+        <div *ngFor="let item of content.faq; let i = index" class="flex">
+          <label>
+            <p>EN:</p>
+            <input type="text" [(ngModel)]="item.nom2"/>
+          </label>
+          <label>
+            <p>FR:</p>
+            <input type="text" [(ngModel)]="item.nom"/>
+          </label>
+          <ng-container *ngFor="let question of item.questions; let j = index">
+            <label>
+              <p>QFR:</p>
+              <input type="text" [(ngModel)]="item.questions[j].q"/>
+            </label>
+            <label>
+              <p>QEN:</p>
+              <input type="text" [(ngModel)]="item.questions[j].q2"/>
+            </label>
+            <label>
+              <p>AFR:</p>
+              <input type="text" [(ngModel)]="item.questions[j].a"/>
+            </label>
+            <label>
+              <p>AEN:</p>
+              <input type="text" [(ngModel)]="item.questions[j].a2"/>
+            </label>
+          </ng-container>
+          <button class="btn btn-danger mt-2" (click)="removeItem('faq',i)">Supprimer</button>
+        </div>
+      </div>
+      <button class="addElement" (click)="addItem('faq')">Ajouter un élément</button>
+
+      <h2>Traductions : </h2>
+      <div *ngFor="let key of keys;let i=index" class="card mb-3 p-3 border rounded shadow-sm">
+        <div class="flex">
+          <label class="col-md-6 mb-2">
+            <p>Français</p>
+            <input type="text" [(ngModel)]="content.trads.fr[key]"/>
+          </label>
+          <label class="col-md-6 mb-2">
+            <p>English</p>
+            <input type="text" [(ngModel)]="content.trads.en[key]"/>
+          </label>
+          <button class="btn btn-danger mt-2" (click)="removeItem('trads',i, key)">Supprimer</button>
+        </div>
+      </div>
 
       <!-- Sauvegarde -->
-      <button (click)="saveSelectedFile()" [disabled]="!selectedFile || !content">Sauvegarder les deux fichiers</button>
+      <button (click)="saveSelectedFile()" class="save">Sauvegarder</button>
 
       <br/>
       <hr/>
